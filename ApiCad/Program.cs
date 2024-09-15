@@ -1,27 +1,19 @@
-
-
 using UserModule.Application.Services;
+using UserModule.Application.Application.Extensions;
 using UserModule.Domain.Ports;
 using UserModule.Domain.Services;
-using UserModule.Infrastructure;
-using UserModule.Infrastructure.Repositories;
+using UserModule.Configuration.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adicionar configuração do MongoDB
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-// Configurar MongoDB
-var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDbConnection");
-var mongoDatabaseName = builder.Configuration.GetValue<string>("MongoDbSettings:DatabaseName");
-builder.Services.AddSingleton<IMongoContext>(new MongoContext(mongoConnectionString, mongoDatabaseName));
-
-// Registrar repositórios e serviços
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Registrar serviços do módulo de usuário
+builder.Services.AddRepositorys(builder.Configuration);
 
 // Configurar os serviços da aplicação
-builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddServices();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

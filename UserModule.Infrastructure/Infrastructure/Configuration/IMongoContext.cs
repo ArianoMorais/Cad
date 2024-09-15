@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UserModule.Domain.Entities;
 
-namespace UserModule.Infrastructure
+namespace UserModule.Infrastructure.Infrastructure.Configuration
 {
     public interface IMongoContext
     {

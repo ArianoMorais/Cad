@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UserModule.Domain.Entities;
 using UserModule.Domain.Ports;
+using UserModule.Infrastructure.Infrastructure.Configuration;
 
 namespace UserModule.Infrastructure.Repositories
 {

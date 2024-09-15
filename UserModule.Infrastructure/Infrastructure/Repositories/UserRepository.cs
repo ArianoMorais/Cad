@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using UserModule.Domain.Entities;
 using UserModule.Domain.Ports;
+using UserModule.Infrastructure.Infrastructure.Configuration;
 
 namespace UserModule.Infrastructure.Repositories
 {

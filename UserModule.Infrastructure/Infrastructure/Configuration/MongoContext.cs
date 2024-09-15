@@ -8,16 +8,16 @@ using Microsoft.Extensions.Options;
 using UserModule.Infrastructure.Configuration;
 using UserModule.Domain.Entities;
 
-namespace UserModule.Infrastructure
+namespace UserModule.Infrastructure.Infrastructure.Configuration
 {
     public class MongoContext : IMongoContext
     {
         private readonly IMongoDatabase _database;
 
-        public MongoContext(string connectionString, string databaseName)
+        public MongoContext(MongoDbSettings mongoSettings)
         {
-            var client = new MongoClient(connectionString);
-            _database = client.GetDatabase(databaseName);
+            var client = new MongoClient(mongoSettings.ConnectionString);
+            _database = client.GetDatabase(mongoSettings.DatabaseName);
         }
 
         public IMongoCollection<TEntity> GetCollection<TEntity>(string name) where TEntity : BaseEntity
