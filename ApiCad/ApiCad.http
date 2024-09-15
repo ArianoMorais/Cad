@@ -1,0 +1,6 @@
+@ApiCad_HostAddress = http://localhost:5157
+
+GET {{ApiCad_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
