@@ -10,8 +10,8 @@ namespace UserModule.Domain.Ports
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {
         Task<TEntity?> GetByIdAsync(long id);
-        Task AddAsync(TEntity entity);
-        Task UpdateAsync(long id, TEntity entity);
+        Task SaveAsync(TEntity entity);
+        Task UpdateAsync(TEntity entity);
         Task DeleteAsync(long id);
         Task<IEnumerable<TEntity>> GetAllAsync();
     }

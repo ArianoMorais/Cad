@@ -15,7 +15,12 @@ builder.Services.AddRepositorys(builder.Configuration);
 // Configurar os serviços da aplicação
 builder.Services.AddServices();
 
+// Configura o AutoMapper usando a classe de extensão
+builder.Services.AddCustomAutoMapper();
+
 builder.Services.AddControllers();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,6 +33,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller}/{action}/{id?}",
+    defaults: new { action = "Index" });
 
 app.UseHttpsRedirection();
 

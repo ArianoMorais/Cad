@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,40 +11,48 @@ using UserModule.Infrastructure.Infrastructure.Configuration;
 
 namespace UserModule.Infrastructure.Repositories
 {
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
-        where TEntity : BaseEntity
+    public abstract class RepositoryBase<TEntity> where TEntity : BaseEntity
     {
-        protected readonly IMongoCollection<TEntity> _collection;
-
-        protected RepositoryBase(IMongoContext context, string collectionName)
+        protected void SaveChanges(TEntity entity, bool isNew)
         {
-            _collection = context.GetCollection<TEntity>(collectionName);
+            if (isNew)
+            {
+                entity.Id = GenerateNewId();
+                entity.DateRegister = DateTime.UtcNow;
+            }
+
+            entity.DateUpdate = DateTime.UtcNow;
+
+            UpdateSubEntities(entity, isNew);
         }
 
-        public async Task AddAsync(TEntity entity)
+        protected void UpdateSubEntities(object entity, bool isNew)
         {
-            await _collection.InsertOneAsync(entity);
+            var properties = entity.GetType().GetProperties();
+            foreach (var property in properties)
+            {
+                if (typeof(IEnumerable<BaseEntity>).IsAssignableFrom(property.PropertyType))
+                {
+                    var subEntities = property.GetValue(entity) as IEnumerable<BaseEntity>;
+                    if (subEntities != null)
+                    {
+                        foreach (var subEntity in subEntities)
+                        {
+                            if (isNew)
+                            {
+                                subEntity.Id = GenerateNewId();
+                                subEntity.DateRegister = DateTime.UtcNow;
+                            }
+                            subEntity.DateUpdate = DateTime.UtcNow;
+                        }
+                    }
+                }
+            }
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        protected long GenerateNewId()
         {
-            var entity = await _collection.Find(_ => true).ToListAsync();
-            return entity;
-        }
-
-        public async Task<TEntity?> GetByIdAsync(long id)
-        {
-            return await _collection.Find(e => e.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task UpdateAsync(long id, TEntity entity)
-        {
-            await _collection.ReplaceOneAsync(e => e.Id == id, entity);
-        }
-
-        public async Task DeleteAsync(long id)
-        {
-            await _collection.DeleteOneAsync(e => e.Id == id);
+            return DateTime.UtcNow.Ticks;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace UserModule.Domain.Ports
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity?> GetByIdAsync(long id);
         Task AddAsync(TEntity entity);
-        Task UpdateAsync(long id, TEntity entity);
+        Task UpdateAsync(TEntity entity);
         Task DeleteAsync(long id);
     }
 }

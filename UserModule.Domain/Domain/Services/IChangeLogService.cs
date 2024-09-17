@@ -9,9 +9,8 @@ using UserModule.Domain.Ports;
 
 namespace UserModule.Domain.Services
 {
-    public interface IUserService : IService<User>
+    public interface IChangeLogService : IService<ChangeLog>
     {
-        Task CreateUserAsync(UserDto userDto);
-        Task UpdateUserAsync(UserDto userDto);
+        Task LogChangesAsync<T>(T oldEntity, T newEntity, long? userId);
     }
 }

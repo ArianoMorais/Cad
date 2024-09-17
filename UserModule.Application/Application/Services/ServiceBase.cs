@@ -30,15 +30,16 @@ namespace UserModule.Application.Services
 
         public virtual async Task AddAsync(TEntity entity)
         {
-            await _repository.AddAsync(entity);
+            await _repository.SaveAsync(entity);
         }
 
-        public virtual async Task UpdateAsync(long id, TEntity entity)
+        public virtual async Task UpdateAsync(TEntity entity)
         {
-            var existingEntity = await _repository.GetByIdAsync(id);
+
+            var existingEntity = await _repository.GetByIdAsync(entity.Id);
             if (existingEntity != null)
             {
-                await _repository.UpdateAsync(id, entity);
+                await _repository.UpdateAsync(entity);
             }
         }
 

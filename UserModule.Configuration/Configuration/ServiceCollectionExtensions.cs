@@ -25,6 +25,7 @@ namespace UserModule.Configuration.Configuration
 
             services.AddSingleton<IMongoContext>(new MongoContext(mongoSettings));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IChangeLogRepository, ChangeLogRepository>();
 
             return services;
         }

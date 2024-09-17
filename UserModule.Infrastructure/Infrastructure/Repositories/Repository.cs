@@ -1,10 +1,13 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using SharpCompress.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserModule.Domain.Entities;
 using UserModule.Domain.Ports;
+using UserModule.Domain.Services;
 using UserModule.Infrastructure.Infrastructure.Configuration;
 
 namespace UserModule.Infrastructure.Repositories
@@ -12,9 +15,78 @@ namespace UserModule.Infrastructure.Repositories
     public class Repository<T> : RepositoryBase<T>, IRepository<T>
         where T : BaseEntity, new()
     {
+        protected readonly IMongoCollection<T> _collection;
+        protected readonly IMongoCollection<ChangeLog> _collectionLog;
+
         public Repository(IMongoContext context, string collectionName)
-            : base(context, collectionName)
         {
+            _collection = context.GetCollection<T>(collectionName);
+            _collectionLog = context.GetCollection<ChangeLog>("ChangeLogs");
+        }
+
+        public async Task SaveAsync(T entity)
+        {
+            SaveChanges(entity, isNew: true);
+            await _collection.InsertOneAsync(entity);
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            var entity = await _collection.Find(_ => true).ToListAsync();
+            return entity;
+        }
+
+        public async Task<T?> GetByIdAsync(long id)
+        {
+            return await _collection.Find(e => e.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            var oldEntity = await _collection.Find(e => e.Id == entity.Id).FirstOrDefaultAsync();
+
+            await LogChangesAsync(oldEntity, entity, entity.UserId);
+
+            SaveChanges(entity, isNew: false);
+            await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
+        }
+
+        public async Task LogChangesAsync<T>(T oldEntity, T newEntity, long? userId)
+        {
+            var fields = typeof(T).GetProperties()
+                .Where(prop => prop.CanRead)
+                .Select(prop => new 
+                {
+                    Name = prop.Name,
+                    OldValue = prop.GetValue(oldEntity)?.ToString(),
+                    NewValue = prop.GetValue(newEntity)?.ToString()
+                })
+                .Where(field => field.OldValue != field.NewValue)
+                .ToList();
+
+            var tasks = fields.Select(field => LogChangeAsync(userId, field.Name, field.OldValue, field.NewValue)).ToList();
+
+            await Task.WhenAll(tasks);
+        }
+        protected async Task LogChangeAsync(long? userId, string fieldName, string oldValue, string newValue)
+        {
+            var changeLog = new ChangeLog
+            {
+                UserId = userId,
+                FieldName = fieldName,
+                OldValue = oldValue,
+                NewValue = newValue
+            };
+
+            changeLog.Id = GenerateNewId();
+            changeLog.DateRegister = DateTime.UtcNow;
+
+            await _collectionLog.InsertOneAsync(changeLog);
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            await _collection.DeleteOneAsync(e => e.Id == id);
         }
     }
 }
