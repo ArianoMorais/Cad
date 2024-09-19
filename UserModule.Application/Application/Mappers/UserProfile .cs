@@ -13,15 +13,14 @@ namespace UserModule.Application.Application.Mappers
     {
         public UserProfile()
         {
-            CreateMap<UserDto, User>();
-            CreateMap<User, UserDto>();
+            CreateMap<LoginDto, User>();
+            CreateMap<User, LoginDto>();
 
             CreateMap<UserDto, User>();
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserDto>().ForMember(dest => dest.Password, opt => opt.Ignore());
 
             CreateMap<AdressDto, Address>();
 
-            CreateMap<User, UserDto>();
             CreateMap<Address, AdressDto>();
         }
     }

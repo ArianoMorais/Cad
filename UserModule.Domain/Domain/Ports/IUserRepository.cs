@@ -10,9 +10,9 @@ namespace UserModule.Domain.Ports
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<User> GetUserByIdAsync(long id);
+        Task<User> GetUserByIdAsync(string id);
         Task AddUserAsync(User user);
         Task<User> FindByCpfOrEmailAsync(string cpf, string email);
-        Task<bool> HasDuplicateAddressAsync(UserDto userDto);
+        Task<User> GetUserByEmailAsync(string email);
     }
 }

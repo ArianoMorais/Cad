@@ -11,6 +11,6 @@ namespace UserModule.Domain.Services
 {
     public interface IChangeLogService : IService<ChangeLog>
     {
-        Task LogChangesAsync<T>(T oldEntity, T newEntity, long? userId);
+
     }
 }

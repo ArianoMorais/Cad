@@ -10,9 +10,9 @@ namespace UserModule.Domain.Ports
     public interface IService<TEntity> where TEntity : BaseEntity
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<TEntity?> GetByIdAsync(long id);
+        Task<TEntity?> GetByIdAsync(string id);
         Task AddAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
-        Task DeleteAsync(long id);
+        Task DeleteAsync(string id);
     }
 }

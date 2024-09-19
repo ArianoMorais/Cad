@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,16 +26,35 @@ namespace ApiCad.Controllers
         }
 
         [HttpGet("Get/{id}")]
-        public async Task<ActionResult<User>> Get(long id)
+        [Authorize]
+        public async Task<ActionResult<User>> Get(string id)
         {
             try
             {
-                var user = await _userService.GetByIdAsync(id);
+                var user = await _userService.GetUserDtoByIdAsync(id);
                 return user != null ? Ok(user) : NotFound("Usuário não encontrado.");
             }
             catch (Exception ex)
             {
                 return HandleError(ex, "Erro ao buscar usuário por ID");
+            }
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            try
+            {
+                var data = await _userService.AuthenticateAsync(loginDto.Email, loginDto.Password);
+
+                if (data == null)
+                    return Unauthorized("Credenciais inválidas.");
+
+                return Ok(new { data });
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex, "Erro ao fazer login");
             }
         }
 
@@ -56,12 +76,13 @@ namespace ApiCad.Controllers
             }
         }
 
-        [HttpPost("Update/{id}")]
-        public async Task<IActionResult> Update(long id, [FromBody] UserDto userDto)
+        [HttpPost("Update")]
+        [Authorize]
+        public async Task<IActionResult> Update([FromBody] UserDto userDto)
         {
             try
             {
-                if (id != userDto.Id)
+                if (userDto.Id != userDto.Id)
                     return BadRequest("O ID do usuário não corresponde ao fornecido.");
 
                 await _userService.UpdateUserAsync(userDto);
@@ -78,15 +99,15 @@ namespace ApiCad.Controllers
         }
 
         [HttpPost("Delete/{id}")]
-        public async Task<IActionResult> Delete(long id)
+        [Authorize]
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
                 var user = await _userService.GetByIdAsync(id);
+
                 if (user == null)
-                {
                     return NotFound("Usuário não encontrado.");
-                }
 
                 await _userService.DeleteAsync(id);
                 return StatusCode(201, "Usuário deletado com sucesso");
@@ -102,6 +123,7 @@ namespace ApiCad.Controllers
         }
 
         [HttpGet("List")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<User>>> List()
         {
             try

@@ -36,7 +36,7 @@ namespace UserModule.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task<T?> GetByIdAsync(long id)
+        public async Task<T?> GetByIdAsync(string id)
         {
             return await _collection.Find(e => e.Id == id).FirstOrDefaultAsync();
         }
@@ -55,7 +55,7 @@ namespace UserModule.Infrastructure.Repositories
         {
             var fields = typeof(T).GetProperties()
                 .Where(prop => prop.CanRead)
-                .Select(prop => new 
+                .Select(prop => new
                 {
                     Name = prop.Name,
                     OldValue = prop.GetValue(oldEntity)?.ToString(),
@@ -64,27 +64,27 @@ namespace UserModule.Infrastructure.Repositories
                 .Where(field => field.OldValue != field.NewValue)
                 .ToList();
 
-            var tasks = fields.Select(field => LogChangeAsync(userId, field.Name, field.OldValue, field.NewValue)).ToList();
-
-            await Task.WhenAll(tasks);
-        }
-        protected async Task LogChangeAsync(long? userId, string fieldName, string oldValue, string newValue)
-        {
-            var changeLog = new ChangeLog
+            if (fields.Any())
             {
-                UserId = userId,
-                FieldName = fieldName,
-                OldValue = oldValue,
-                NewValue = newValue
-            };
-
-            changeLog.Id = GenerateNewId();
-            changeLog.DateRegister = DateTime.UtcNow;
-
-            await _collectionLog.InsertOneAsync(changeLog);
+                var changeLog = new ChangeLog
+                {
+                    UserId = userId,
+                    Changes = fields.Select(field => new ChangeDetail
+                    {
+                        Id = GenerateNewId(),
+                        DateRegister = DateTime.UtcNow,
+                        FieldName = field.Name,
+                        OldValue = field.OldValue,
+                        NewValue = field.NewValue
+                    }).ToList(),
+                    Id = GenerateNewId(),
+                    DateRegister = DateTime.UtcNow
+                };
+                await _collectionLog.InsertOneAsync(changeLog);
+            }
         }
 
-        public async Task DeleteAsync(long id)
+        public async Task DeleteAsync(string id)
         {
             await _collection.DeleteOneAsync(e => e.Id == id);
         }

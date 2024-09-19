@@ -21,36 +21,6 @@ namespace UserModule.Application.Services
             _changeLogRepository = changeLogRepository;
         }
 
-        public async Task LogChangesAsync<T>(T oldEntity, T newEntity, long? userId)
-        {
-            var fields = typeof(T).GetProperties()
-                .Where(prop => prop.CanRead)
-                .Select(prop => new
-                {
-                    Name = prop.Name,
-                    OldValue = prop.GetValue(oldEntity)?.ToString(),
-                    NewValue = prop.GetValue(newEntity)?.ToString()
-                })
-                .Where(field => field.OldValue != field.NewValue)
-                .ToList();
-
-            var tasks = fields
-                .Select(field => LogChangeAsync(userId, field.Name, field.OldValue, field.NewValue))
-                .ToList();
-
-            await Task.WhenAll(tasks);
-        }
-        private async Task LogChangeAsync(long? userId, string fieldName, string oldValue, string newValue)
-        {
-            var changeLog = new ChangeLog
-            {
-                UserId = userId,
-                FieldName = fieldName,
-                OldValue = oldValue,
-                NewValue = newValue
-            };
-
-            await _changeLogRepository.SaveAsync(changeLog);
-        }
+        
     }
 }

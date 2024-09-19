@@ -50,9 +50,9 @@ namespace UserModule.Infrastructure.Repositories
             }
         }
 
-        protected long GenerateNewId()
+        protected string GenerateNewId()
         {
-            return DateTime.UtcNow.Ticks;
+            return Guid.NewGuid().ToString();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace UserModule.Application.Services
             return await _repository.GetAllAsync();
         }
 
-        public virtual async Task<TEntity?> GetByIdAsync(long id)
+        public virtual async Task<TEntity?> GetByIdAsync(string id)
         {
             return await _repository.GetByIdAsync(id);
         }
@@ -43,7 +43,7 @@ namespace UserModule.Application.Services
             }
         }
 
-        public virtual async Task DeleteAsync(long id)
+        public virtual async Task DeleteAsync(string id)
         {
             await _repository.DeleteAsync(id);
         }

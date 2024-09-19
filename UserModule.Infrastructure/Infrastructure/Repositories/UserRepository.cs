@@ -19,9 +19,14 @@ namespace UserModule.Infrastructure.Repositories
         {
         }
 
-        public async Task<User> GetUserByIdAsync(long id)
+        public async Task<User> GetUserByIdAsync(string id)
         {
             return await _collection.Find(user => user.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _collection.Find(user => user.Email == email).FirstOrDefaultAsync();
         }
 
         public async Task<User> FindByCpfOrEmailAsync(string cpf, string email)
@@ -32,31 +37,6 @@ namespace UserModule.Infrastructure.Repositories
             );
 
             return await _collection.Find(filter).FirstOrDefaultAsync();
-        }
-        public async Task<bool> HasDuplicateAddressAsync(UserDto userDto)
-        {
-            var existingUser = await GetUserByIdAsync(userDto.Id);
-
-            if (existingUser == null || existingUser.Addresses == null || !existingUser.Addresses.Any())
-            {
-                return false;
-            }
-
-            foreach (var newAddress in userDto.Addresses)
-            {
-                var isDuplicate = existingUser.Addresses.Any(existingAddress =>
-                    existingAddress.Street == newAddress.Street &&
-                    existingAddress.City == newAddress.City &&
-                    existingAddress.State == newAddress.State &&
-                    existingAddress.ZipCode == newAddress.ZipCode);
-
-                if (isDuplicate)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
         public async Task AddUserAsync(User user)
         {
