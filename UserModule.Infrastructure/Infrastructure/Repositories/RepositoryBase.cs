@@ -17,7 +17,7 @@ namespace UserModule.Infrastructure.Repositories
             UpdateSubEntities(entity, isNew);
         }
 
-        protected void UpdateSubEntities(object entity, bool isNew)
+        protected void UpdateSubEntities(TEntity entity, bool isNew)
         {
             var properties = entity.GetType().GetProperties();
             foreach (var property in properties)
@@ -29,7 +29,7 @@ namespace UserModule.Infrastructure.Repositories
                     {
                         foreach (var subEntity in subEntities)
                         {
-                            if (isNew)
+                            if (isNew || string.IsNullOrWhiteSpace(subEntity.Id))
                             {
                                 subEntity.Id = GenerateNewId();
                                 subEntity.DateRegister = DateTime.UtcNow;
