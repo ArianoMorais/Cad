@@ -1,13 +1,6 @@
 ﻿using MongoDB.Driver;
-using SharpCompress.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserModule.Domain.Entities;
 using UserModule.Domain.Ports;
-using UserModule.Domain.Services;
 using UserModule.Infrastructure.Infrastructure.Configuration;
 
 namespace UserModule.Infrastructure.Repositories

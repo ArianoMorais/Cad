@@ -13,7 +13,6 @@ namespace ApiCad.Controllers
             _logger = logger;
         }
 
-        // Método comum para tratar erros e retornar resposta com log
         protected ActionResult HandleError(Exception ex, string message)
         {
             _logger.LogError(ex, message);
@@ -25,7 +24,6 @@ namespace ApiCad.Controllers
             return BadRequest(new { Errors = ex.Errors, Message = ex.Message });
         }
 
-        // Método comum para validar entidades
         protected ActionResult ValidateEntity<TModel>(TModel entity)
         {
             if (entity == null)
@@ -37,7 +35,6 @@ namespace ApiCad.Controllers
             return null;
         }
 
-        // Método comum para retornar respostas com status 404 se não encontrado
         protected ActionResult HandleNotFound(object result)
         {
             if (result == null)

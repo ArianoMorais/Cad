@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Driver;
-using UserModule.Domain.Domain.Dtos;
+﻿using MongoDB.Driver;
 using UserModule.Domain.Entities;
 using UserModule.Domain.Ports;
-using UserModule.Domain.Services;
 using UserModule.Infrastructure.Infrastructure.Configuration;
 
 namespace UserModule.Infrastructure.Repositories
@@ -28,7 +21,6 @@ namespace UserModule.Infrastructure.Repositories
         {
             return await _collection.Find(user => user.Email == email).FirstOrDefaultAsync();
         }
-
         public async Task<User> FindByCpfOrEmailAsync(string cpf, string email)
         {
             var filter = Builders<User>.Filter.Or(

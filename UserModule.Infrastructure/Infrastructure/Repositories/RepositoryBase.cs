@@ -1,13 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UserModule.Domain.Entities;
-using UserModule.Domain.Ports;
-using UserModule.Infrastructure.Infrastructure.Configuration;
+﻿using UserModule.Domain.Entities;
 
 namespace UserModule.Infrastructure.Repositories
 {
